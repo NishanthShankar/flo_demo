@@ -40,7 +40,7 @@ class MainStore {
     let fin = `${url}?input=${phrase}&types=(regions)&location=${latitude},${longitude}&key=${G.variables.GOOGLE_KEY}`
     fetch(fin)
       .then(d => d.json())
-      .then(data => { 
+      .then(data => {
         this.currentLocations = _.map(data.predictions, pred => ({
           id: pred.id,
           placeId: pred.place_id,

@@ -7,8 +7,8 @@ import {
   TouchableOpacity
 } from 'react-native'
 
-import MapView, {Marker, AnimatedRegion, Animated} from 'react-native-maps'
-import {observer, intercept} from 'mobx-react/native'
+import MapView, {Marker} from 'react-native-maps'
+import {observer} from 'mobx-react/native'
 
 // Styles
 const styles = StyleSheet.create({
@@ -53,7 +53,7 @@ export default class App extends Component {
     // observe(this.props.store.newLocation, console.log)
   }
   goTo = ({lat, lng}) => {
-    this.mapview.animateToCoordinate({latitude:lat, longitude:lng})
+    this.mapview.animateToCoordinate({latitude: lat, longitude: lng})
   }
   getMyLocation = () => {
     navigator.geolocation.getCurrentPosition(position => {
