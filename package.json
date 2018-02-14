@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
+    "test": "jest",
+    "lint": "standard --verbose",
+    "fixcode": "standard --fix"
   },
   "dependencies": {
     "mobx": "^3.5.1",
@@ -14,13 +16,39 @@
     "react-native-maps": "^0.20.1"
   },
   "devDependencies": {
+    "babel-eslint": "7.1.1",
     "babel-jest": "22.2.2",
     "babel-plugin-transform-decorators-legacy": "^1.3.4",
     "babel-preset-react-native": "4.0.0",
     "jest": "22.2.2",
-    "react-test-renderer": "16.2.0"
+    "react-test-renderer": "16.2.0",
+    "standard": "^10.0.3"
   },
   "jest": {
     "preset": "react-native"
+  },
+  "standard": {
+    "parser": "babel-eslint",
+    "globals": [
+      "describe",
+      "test",
+      "jest",
+      "expect",
+      "fetch",
+      "navigator",
+      "__DEV__",
+      "XMLHttpRequest",
+      "FormData",
+      "React$Element",
+      "jasmine",
+      "by",
+      "it",
+      "element",
+      "device",
+      "beforeEach",
+      "beforeAll",
+      "afterEach",
+      "afterAll"
+    ]
   }
 }
