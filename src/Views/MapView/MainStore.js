@@ -86,7 +86,8 @@ class MainStore {
           name: item.name,
           open: _.get(item, 'opening_hours.open_now', false),
           placeId: item.place_id,
-          rating: item.rating
+          rating: item.rating,
+          vicinity: item.vicinity
         }))
         map.fitToElements(true, {edgePadding: {top: 20, right: 10, bottom: 10, left: 10}})
       })

@@ -9,7 +9,7 @@ import {
   TouchableOpacity
 } from 'react-native'
 
-import MapView, {Marker} from 'react-native-maps'
+import MapView, {Marker, Callout} from 'react-native-maps'
 import {observer} from 'mobx-react/native'
 let placeMarker = require('../../assets/place_marker.png')
 let selectedMarkerIcon = require('../../assets/selected_marker.png')
@@ -42,6 +42,21 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ececec',
     paddingHorizontal: 12,
     justifyContent: 'center'
+  },
+  callout: {
+    padding: 4,
+    minWidth: 250,
+    backgroundColor: 'white',
+    flexDirection: 'row'
+  },
+  calloutImage: {
+    width: 54,
+    backgroundColor: '#ececec'
+  },
+  restaurantName: {
+    fontSize: 16,
+    color: '#303030',
+    fontWeight: '500'
   }
 })
 
@@ -49,6 +64,7 @@ const styles = StyleSheet.create({
 export default class App extends Component {
   constructor (props) {
     super(props)
+    this.markers = {}
     this.state = {}
   }
   componentDidMount () {
@@ -67,16 +83,30 @@ export default class App extends Component {
       console.log('Error Positiion:')
     })
   }
+  onMarkerLayout = (id, selectedMarker) => {
+    if (id !== selectedMarker) return
+    this.markers[id].showCallout()
+  }
+  onMarkerPress = (e, id) => {
+    const {selectedMarker} = this.props.store
+    if (id === selectedMarker) {
+      return this.markers[id].showCallout()
+    }
+    this.markers[id].hideCallout()
+    let {selectMarker} = this.props.store
+    
+    setTimeout(() => selectMarker(id), 700)
+  }
   render () {
-    let {location, onChangeText, searchPhrase, selectedMarker, selectMarker,
+    let {location, onChangeText, searchPhrase, selectedMarker,
       hiddenId, topLocations, fetchAreaDetails, topRestaurants, loading} = this.props.store
     const {latitude, longitude} = location
     const True = true
-    console.log("LOADING:", loading)
+    console.log('LOADING:', loading)
     return (
       <View style={StyleSheet.absoluteFill}>
-        <Image source={placeMarker} style={{opacity:0}} />
-        <Image source={selectedMarkerIcon} style={{opacity:0}} />
+        <Image source={placeMarker} style={{opacity: 0}} />
+        <Image source={selectedMarkerIcon} style={{opacity: 0}} />
         <MapView
           ref={mapview => { this.mapview = mapview }}
           style={StyleSheet.absoluteFill}
@@ -98,20 +128,38 @@ export default class App extends Component {
             topRestaurants.map((rest) => {
               const {lat: latitude, lng: longitude} = rest.location
               const size = rest.rating > 3.5 ? 32 : 20
-              let image = rest.id === selectedMarker ? selectedMarkerIcon : placeMarker
-              let height = rest.id === selectedMarker ? size * 1.5 : size
-              let y = rest.id === selectedMarker ? 0.9 : 0.5
+              let selected = rest.id === selectedMarker
+              let image = selected ? selectedMarkerIcon : placeMarker
+              let height = selected ? size * 1.5 : size
+              let y = selected ? 0.9 : 0.5
 
               if (rest.id === hiddenId) {
                 return <View key={hiddenId} />
               }
+              let bgColor = rest.rating<2.5?"#F88B8B":rest.rating<4?"#F7A875":"#B2F193"
               return (
                 <Marker
+                  ref={marker => { this.markers[rest.id] = marker }}
+                  onLayout={() => this.onMarkerLayout(rest.id, selectedMarker)}
                   key={rest.id}
                   anchor={{x: 0.525, y}}
                   coordinate={{latitude, longitude}}
-                  onPress={() => selectMarker(rest.id)}>
+                  onPress={(e) => this.onMarkerPress(e, rest.id)}
+                  >
                   <Image source={image} style={{height: height, width: size}} />
+                  <Callout>
+                    <View style={styles.callout} >
+                      <View style={styles.calloutImage} />
+                      <View style={[{marginLeft: 8}]}>
+                        <Text style={styles.restaurantName}>{rest.name}</Text>
+                        <View style={[{flexDirection: 'row', alignItems: 'center'}]}>
+                          <Text style={{fontSize: 12, color: '#303030', backgroundColor: bgColor, padding: 4}}>{rest.rating}</Text>
+                          <Text style={{marginLeft:8, fontSize: 12, color: '#303030'}}>{rest.vicinity.split(', ').slice(1, 2).join(', ')}</Text>
+                        </View>
+                        <Text style={{fontSize: 12, color: '#303030', marginVertical: 4}}>{rest.open ? 'Open now' : 'Closed'}</Text>
+                      </View>
+                    </View>
+                  </Callout>
                 </Marker>
               )
             }
