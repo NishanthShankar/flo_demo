@@ -15,6 +15,29 @@ import {observer} from 'mobx-react/native'
 let placeMarker = require('../../assets/place_marker.png')
 let selectedMarkerIcon = require('../../assets/selected_marker.png')
 
+var CustomCallout = (props) => {
+  const bgColor = props.rating < 2.5
+                      ? '#F88B8B' : props.rating < 4
+                          ? '#F7A875' : '#B2F193'
+  const vicinity = props.vicinity.split(', ').slice(1, 2).join(', ')
+  const openText = props.open ? 'Open now' : 'Closed'
+  return (
+    <View style={styles.callout} >
+      <View style={styles.calloutImage} />
+      <View style={[{marginLeft: 8}]}>
+        <Text style={styles.restaurantName}>{props.name}</Text>
+        <View style={[styles.rowCenter]}>
+          <Text style={[styles.ratingText, {backgroundColor: bgColor}]}>
+            {props.rating}
+          </Text>
+          <Text style={styles.vicinityText}>{vicinity}</Text>
+        </View>
+        <Text style={styles.openText}>{openText}</Text>
+      </View>
+    </View>
+  )
+}
+
 // Styles
 @observer
 export default class App extends Component {
@@ -57,46 +80,21 @@ export default class App extends Component {
   renderRestaurants = () => {
     let {selectedMarker, hiddenId, topRestaurants} = this.props.store
 
-    return topRestaurants.map((rest) => {
-      const {lat: latitude, lng: longitude} = rest.location
-      const size = rest.rating > 3.5 ? 32 : 20
-      let selected = rest.id === selectedMarker
-      let image = selected ? selectedMarkerIcon : placeMarker
-      let height = selected ? size * 1.5 : size
-      let y = selected ? 0.9 : 0.5
-
-      if (rest.id === hiddenId) {
-        return <View key={hiddenId} />
-      }
-      let bgColor = rest.rating < 2.5
-                      ? '#F88B8B' : rest.rating < 4
-                          ? '#F7A875' : '#B2F193'
-      let vicinity = rest.vicinity.split(', ').slice(1, 2).join(', ')
-      let openText = rest.open ? 'Open now' : 'Closed'
+    return topRestaurants.map((place) => {
+      const {lat: latitude, lng: longitude} = place.location
+      const size = place.rating > 3.5 ? 32 : 20
+      
       return (
         <Marker
-          ref={marker => { this.markers[rest.id] = marker }}
-          onLayout={() => this.onMarkerLayout(rest.id, selectedMarker)}
-          key={rest.id}
-          anchor={{x: 0.525, y}}
+          ref={marker => { this.markers[place.id] = marker }}
+          onLayout={() => this.onMarkerLayout(place.id, selectedMarker)}
+          key={place.id}
+          anchor={{x: 0.525, y: 0.5}}
           coordinate={{latitude, longitude}}
-          onPress={(e) => this.onMarkerPress(e, rest.id)}
           >
-          <Image source={image} style={{height: height, width: size}} />
+          <Image source={placeMarker} style={{height: size, width: size}} />
           <Callout>
-            <View style={styles.callout} >
-              <View style={styles.calloutImage} />
-              <View style={[{marginLeft: 8}]}>
-                <Text style={styles.restaurantName}>{rest.name}</Text>
-                <View style={[styles.rowCenter]}>
-                  <Text style={[styles.ratingText, {backgroundColor: bgColor}]}>
-                    {rest.rating}
-                  </Text>
-                  <Text style={styles.vicinityText}>{vicinity}</Text>
-                </View>
-                <Text style={styles.openText}>{openText}</Text>
-              </View>
-            </View>
+            <CustomCallout {...place} />
           </Callout>
         </Marker>
       )
