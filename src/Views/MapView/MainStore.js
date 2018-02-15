@@ -7,6 +7,7 @@ import G from '../../config/globals'
 class MainStore {
   @observable loading = false
   @observable offline = false
+  @observable noResults = false
   @observable text = 'No error'
   @observable searchPhrase = ''
   @observable showMyLocation = true
@@ -30,8 +31,13 @@ class MainStore {
 
   @action.bound
   onChangeText = text => {
+    this.noResults = false
     this.searchPhrase = text
     clearTimeout(this.timer)
+    if (!text) {
+      this.currentLocations = []
+      return
+    }
     this.timer = setTimeout(
       this.fetchAreaSuggestions(text)
     , 600)
@@ -41,10 +47,10 @@ class MainStore {
   fetchAreaSuggestions = phrase => dummy => {
     this.offline = false
     this.loading = true
-    let {latitude, longitude} = this.location
-    let url = `https://maps.googleapis.com/maps/api/place/autocomplete/json`
-    let fin = `${url}?input=${phrase}&types=(regions)&location=${latitude},${longitude}&key=${G.variables.GOOGLE_KEY}`
-    fetch(fin)
+    const {latitude, longitude} = this.location
+    const base = `https://maps.googleapis.com/maps/api/place/autocomplete/json`
+    const url = `${base}?input=${phrase}&types=(regions)&location=${latitude},${longitude}&key=${G.variables.GOOGLE_KEY}`
+    fetch(url)
       .then(d => d.json())
       .then(data => {
         this.currentLocations = _.map(data.predictions, pred => ({
@@ -52,6 +58,9 @@ class MainStore {
           placeId: pred.place_id,
           label: pred.structured_formatting.main_text
         }))
+        if (this.currentLocations.length < 1) {
+          this.noResults = true
+        }
       })
       .catch(_ => { this.offline = true })
       .then(() => { this.loading = false })
@@ -61,13 +70,13 @@ class MainStore {
   fetchAreaDetails = (placeId, map) => {
     this.offline = false
     this.loading = true
-    let base = `https://maps.googleapis.com/maps/api/place/details/json`
-    let url = `${base}?placeid=${placeId}&key=${G.variables.GOOGLE_KEY}`
+    const base = `https://maps.googleapis.com/maps/api/place/details/json`
+    const url = `${base}?placeid=${placeId}&key=${G.variables.GOOGLE_KEY}`
     fetch(url)
       .then(d => d.json())
       .then(data => {
         this.currentLocations = []
-        let {lat, lng} = data.result.geometry.location
+        const {lat, lng} = data.result.geometry.location
         Keyboard.dismiss()
         // cb({lat, lng})
         map.animateToCoordinate({latitude: lat, longitude: lng})
@@ -83,8 +92,8 @@ class MainStore {
   fetchNearbyRestaurants = ({lat, lng}, map) => {
     this.offline = false
     this.loading = true
-    let base = `https://maps.googleapis.com/maps/api/place/nearbysearch/json`
-    let url = `${base}?location=${lat},${lng}&radius=1000&type=restaurant&key=${G.variables.GOOGLE_KEY}`
+    const base = `https://maps.googleapis.com/maps/api/place/nearbysearch/json`
+    const url = `${base}?location=${lat},${lng}&radius=1000&type=restaurant&key=${G.variables.GOOGLE_KEY}`
     fetch(url)
       .then(d => d.json())
       .then(({results}) => {

@@ -110,10 +110,10 @@ export default class App extends Component {
   }
   render () {
     let {location, onChangeText, searchPhrase, showMyLocation, offline,
-      topLocations, fetchAreaDetails, loading} = this.props.store
+      topLocations, fetchAreaDetails, loading, noResults} = this.props.store
     const {latitude, longitude} = location
     const True = true
-    console.log('LOADING:', loading)
+    const errorText = noResults ? 'No results' : 'Seems like your offline'
     return (
       <View style={StyleSheet.absoluteFillObject}>
         <Image source={placeMarker} style={{opacity: 0}} />
@@ -131,17 +131,18 @@ export default class App extends Component {
           {showMyLocation ? <Marker coordinate={location} /> : <View />}
           {this.renderRestaurants()}
         </MapView>
-        {offline
+        {offline || noResults
         ? <View style={styles.offlineContainer} >
           <View style={[{height: 88}]} />
           <View style={{height: 36, alignItems: 'center'}}>
-            <Text style={{color: '#fff'}}> Seems like your offline.</Text>
+            <Text style={{color: '#fff'}}>{errorText}</Text>
           </View>
         </View> : <View />}
         <View style={[styles.searchBar]} >
           <TextInput
             autoCorrect={false}
             onChangeText={onChangeText}
+            selectTextOnFocus={True}
             value={searchPhrase}
             placeholder='Search location'
             underlineColorAndroid='#0000'
@@ -153,12 +154,15 @@ export default class App extends Component {
         <View style={[styles.searchResultsHolder]}>
           {topLocations.map(data => {
             return (
-              <TouchableOpacity key={data.id} onPress={_ => fetchAreaDetails(data.placeId, this.mapview)} style={[styles.searchResult]}>
+              <TouchableOpacity key={data.id}
+                onPress={_ => fetchAreaDetails(data.placeId, this.mapview)}
+                style={[styles.searchResult]}>
                 <Text>{data.label}</Text>
               </TouchableOpacity >
             )
           })}
         </View>
+        {/* <View style={[{position:"absolute", left:0, bottom:0, right:0, height:54, backgroundColor:"#000" }]}></View> */}
 
       </View>
     )
