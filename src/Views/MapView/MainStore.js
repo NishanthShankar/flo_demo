@@ -1,5 +1,5 @@
 import {computed, action, observable} from 'mobx'
-import {Keyboard} from 'react-native'
+import {Keyboard, NetInfo} from 'react-native'
 import _ from 'lodash'
 
 import G from '../../config/globals'
@@ -11,24 +11,36 @@ class MainStore {
   @observable text = 'No error'
   @observable searchPhrase = ''
   @observable showMyLocation = true
-  @observable location = {
-    latitude: 12.893800,
-    longitude: 77.615558
-  }
   @observable selectedMarker = null
   @observable hiddenId = null
   @observable currentLocations = []
+  @observable places = []
+  @observable location = {
+    // latitude: 12.893800,
+    // longitude: 77.615558
+  }
   @computed get topLocations () {
     let locations = this.currentLocations.slice(0, 3)
     return locations
   }
 
-  @observable places = []
   @computed get topRestaurants () {
     let locations = this.places.slice(0, 10)
     return locations
   }
-
+  handleNetwork = isConnected => {
+    this.offline = !isConnected
+  }
+  @action.bound checkNetwork = _ => {
+    NetInfo.isConnected.fetch().then(isConnected => {
+      console.log("CONNECTED:",isConnected)
+      this.offline = !isConnected
+      NetInfo.isConnected.addEventListener(
+        'connectionChange',
+        this.handleNetwork
+      )
+    })
+  }
   @action.bound
   onChangeText = text => {
     this.noResults = false
@@ -130,17 +142,15 @@ class MainStore {
 
   @action.bound
   getLocation = () => {
-    this.text = 'Get positions'
-    console.log('Get Positiion:')
-    try {
-      navigator.geolocation.getCurrentPosition(position => {
-        console.log('Positiion:', position)
-      }, () => {
-        this.text = 'Error'
-      })
-    } catch (error) {
-      this.text = 'Error'
-    }
+    navigator.geolocation.getCurrentPosition(position => {
+      console.log('Positiion:', position)
+      let latitude = position.coords.latitude
+      let longitude = position.coords.longitude
+      this.location = {latitude, longitude}
+    }, () => {
+      // latitude: 12.893800,
+      // longitude: 77.615558
+    })
   }
 }
 

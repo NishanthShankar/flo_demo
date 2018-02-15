@@ -47,20 +47,14 @@ export default class App extends Component {
     this.state = {}
   }
   componentDidMount () {
-    this.props.store.toggleLogin()
     this.props.store.getLocation()
-    this.getMyLocation()
+    this.props.store.checkNetwork()
     // observe(this.props.store.newLocation, console.log)
   }
   goTo = ({lat, lng}) => {
     this.mapview.animateToCoordinate({latitude: lat, longitude: lng})
   }
-  getMyLocation = () => {
-    navigator.geolocation.getCurrentPosition(position => {
-      console.log('Positiion:', position)
-    }, () => {
-      console.log('Error Positiion:')
-    })
+  onMapLoad = () => {
     let {latitude: lat, longitude: lng} = this.props.store.location
     this.props.store.fetchNearbyRestaurants({lat, lng}, this.mapview)
   }
@@ -110,8 +104,9 @@ export default class App extends Component {
       <View style={StyleSheet.absoluteFillObject}>
         <Image source={placeMarker} style={{opacity: 0}} />
         <Image source={selectedMarkerIcon} style={{opacity: 0}} />
-        <MapView
+        {!latitude?<View />:<MapView
           ref={mapview => { this.mapview = mapview }}
+          onMapReady={this.onMapLoad}
           style={StyleSheet.absoluteFill}
           initialRegion={{
             latitude,
@@ -122,7 +117,7 @@ export default class App extends Component {
         >
           {showMyLocation ? <Marker coordinate={location} /> : <View />}
           {this.renderRestaurants()}
-        </MapView>
+        </MapView>}
         {offline || noResults
         ? <View style={styles.offlineContainer} >
           <View style={[{height: 88}]} />
