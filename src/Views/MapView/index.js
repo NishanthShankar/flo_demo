@@ -109,7 +109,7 @@ export default class App extends Component {
     })
   }
   render () {
-    let {location, onChangeText, searchPhrase, showMyLocation, offline, 
+    let {location, onChangeText, searchPhrase, showMyLocation, offline,
       topLocations, fetchAreaDetails, loading} = this.props.store
     const {latitude, longitude} = location
     const True = true
@@ -133,11 +133,11 @@ export default class App extends Component {
         </MapView>
         {offline
         ? <View style={styles.offlineContainer} >
-          <View style={[{height: 88}]}></View>
-          <View style={{height:36, alignItems: 'center',}}>
-            <Text style={{color: "#fff"}}> Seems like your offline.</Text>
+          <View style={[{height: 88}]} />
+          <View style={{height: 36, alignItems: 'center'}}>
+            <Text style={{color: '#fff'}}> Seems like your offline.</Text>
           </View>
-        </View>:<View />}
+        </View> : <View />}
         <View style={[styles.searchBar]} >
           <TextInput
             autoCorrect={false}

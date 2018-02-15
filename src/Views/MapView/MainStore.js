@@ -55,7 +55,7 @@ class MainStore {
       })
       .catch(_ => { this.offline = true })
       .then(() => { this.loading = false })
-  } 
+  }
 
   @action.bound
   fetchAreaDetails = (placeId, map) => {
