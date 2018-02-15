@@ -78,12 +78,12 @@ export default class App extends Component {
     selectMarker(id)
   }
   renderRestaurants = () => {
-    let {selectedMarker, hiddenId, topRestaurants} = this.props.store
+    let {selectedMarker, topRestaurants} = this.props.store
 
     return topRestaurants.map((place) => {
       const {lat: latitude, lng: longitude} = place.location
       const size = place.rating > 3.5 ? 32 : 20
-      
+
       return (
         <Marker
           ref={marker => { this.markers[place.id] = marker }}
@@ -101,7 +101,7 @@ export default class App extends Component {
     })
   }
   render () {
-    let {location, onChangeText, searchPhrase, showMyLocation, offline, 
+    let {location, onChangeText, searchPhrase, showMyLocation, offline,
       topLocations, fetchAreaDetails, loading} = this.props.store
     const {latitude, longitude} = location
     const True = true
@@ -125,11 +125,11 @@ export default class App extends Component {
         </MapView>
         {offline
         ? <View style={styles.offlineContainer} >
-          <View style={[{height: 88}]}></View>
-          <View style={{height:36, alignItems: 'center',}}>
-            <Text style={{color: "#fff"}}> Seems like your offline.</Text>
+          <View style={[{height: 88}]} />
+          <View style={{height: 36, alignItems: 'center'}}>
+            <Text style={{color: '#fff'}}> Seems like your offline.</Text>
           </View>
-        </View>:<View />}
+        </View> : <View />}
         <View style={[styles.searchBar]} >
           <TextInput
             autoCorrect={false}
