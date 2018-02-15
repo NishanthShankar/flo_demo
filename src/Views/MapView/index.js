@@ -12,8 +12,10 @@ import {
 import styles from './MainViewStyles'
 import MapView, {Marker, Callout} from 'react-native-maps'
 import {observer} from 'mobx-react/native'
+
 let placeMarker = require('../../assets/place_marker.png')
 let selectedMarkerIcon = require('../../assets/selected_marker.png')
+let marker = require('../../assets/marker.png')
 
 var CustomCallout = (props) => {
   const bgColor = props.rating < 2.5
@@ -102,9 +104,10 @@ export default class App extends Component {
     const errorText = noResults ? 'No results' : 'Seems like your offline'
     return (
       <View style={StyleSheet.absoluteFillObject}>
+        {/* preload images */}
         <Image source={placeMarker} style={{opacity: 0}} />
         <Image source={selectedMarkerIcon} style={{opacity: 0}} />
-        {!latitude?<View />:<MapView
+        {!latitude ? <View /> : <MapView
           ref={mapview => { this.mapview = mapview }}
           onMapReady={this.onMapLoad}
           style={StyleSheet.absoluteFill}
@@ -115,7 +118,10 @@ export default class App extends Component {
             longitudeDelta: 0.0121
           }}
         >
-          {showMyLocation ? <Marker coordinate={location} /> : <View />}
+          {showMyLocation
+          ? <Marker coordinate={location} anchor={{x: 0.5, y: 0.5}}>
+            <Image source={marker} style={{height: 32, width: 32}} />
+          </Marker> : <View />}
           {this.renderRestaurants()}
         </MapView>}
         {offline || noResults

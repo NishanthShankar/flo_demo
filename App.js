@@ -1,11 +1,14 @@
 import React, { Component } from 'react'
 import {
   StyleSheet,
-  View
+  View,
+  Image
 } from 'react-native'
 
 import MainView from './src/Views/MapView'
 import store from './src/Views/MapView/MainStore'
+
+import marker from './src/assets/marker.png'
 
 // type Props = {};
 export default class App extends Component {
@@ -13,6 +16,7 @@ export default class App extends Component {
     return (
       <View style={styles.container}>
         <MainView store={store} />
+        <Image source={marker} style={{opacity: 0}} />
       </View>
     )
   }
