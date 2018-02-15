@@ -6,7 +6,7 @@ import {
 const styles = StyleSheet.create({
   offlineContainer: {
     position: 'absolute',
-    top: 10,
+    top: 32,
     left: 4,
     right: 4,
     backgroundColor: '#303030',
@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: 'white',
     position: 'absolute',
-    top: 24,
+    top: 46,
     left: 16,
     right: 16,
     elevation: 6,
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   },
   searchResultsHolder: {
     position: 'absolute',
-    top: 80,
+    top: 102,
     left: 16,
     right: 16,
     backgroundColor: 'white',
