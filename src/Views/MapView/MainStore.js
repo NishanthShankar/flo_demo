@@ -6,8 +6,10 @@ import G from '../../config/globals'
 
 class MainStore {
   @observable loading = false
+  @observable offline = false
   @observable text = 'No error'
   @observable searchPhrase = ''
+  @observable showMyLocation = true
   @observable location = {
     latitude: 12.893800,
     longitude: 77.615558
@@ -37,6 +39,7 @@ class MainStore {
 
   @action.bound
   fetchAreaSuggestions = phrase => dummy => {
+    this.offline = false
     this.loading = true
     let {latitude, longitude} = this.location
     let url = `https://maps.googleapis.com/maps/api/place/autocomplete/json`
@@ -50,14 +53,16 @@ class MainStore {
           label: pred.structured_formatting.main_text
         }))
       })
+      .catch(_ => { this.offline = true })
       .then(() => { this.loading = false })
-  }
+  } 
 
   @action.bound
   fetchAreaDetails = (placeId, map) => {
+    this.offline = false
+    this.loading = true
     let base = `https://maps.googleapis.com/maps/api/place/details/json`
     let url = `${base}?placeid=${placeId}&key=${G.variables.GOOGLE_KEY}`
-    this.loading = true
     fetch(url)
       .then(d => d.json())
       .then(data => {
@@ -66,17 +71,20 @@ class MainStore {
         Keyboard.dismiss()
         // cb({lat, lng})
         map.animateToCoordinate({latitude: lat, longitude: lng})
+        this.showMyLocation = false
         this.fetchNearbyRestaurants({lat, lng}, map)
         // this.test = 2
       })
+      .catch(_ => { this.offline = true })
       .then(() => { this.loading = false })
   }
 
   @action.bound
   fetchNearbyRestaurants = ({lat, lng}, map) => {
+    this.offline = false
+    this.loading = true
     let base = `https://maps.googleapis.com/maps/api/place/nearbysearch/json`
     let url = `${base}?location=${lat},${lng}&radius=1000&type=restaurant&key=${G.variables.GOOGLE_KEY}`
-    this.loading = true
     fetch(url)
       .then(d => d.json())
       .then(({results}) => {
@@ -91,6 +99,7 @@ class MainStore {
         }))
         map.fitToElements(true, {edgePadding: {top: 20, right: 10, bottom: 10, left: 10}})
       })
+      .catch(_ => { this.offline = true })
       .then(() => { this.loading = false })
   }
   @action.bound

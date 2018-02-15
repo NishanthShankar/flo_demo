@@ -4,6 +4,14 @@ import {
 
 // Styles
 const styles = StyleSheet.create({
+  offlineContainer: {
+    position: 'absolute',
+    top: 10,
+    left: 4,
+    right: 4,
+    backgroundColor: '#303030',
+    borderRadius: 4
+  },
   searchBar: {
     height: 56,
     flexDirection: 'row',

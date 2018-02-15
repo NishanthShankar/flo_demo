@@ -38,6 +38,8 @@ export default class App extends Component {
     }, () => {
       console.log('Error Positiion:')
     })
+    let {latitude: lat, longitude: lng} = this.props.store.location
+    this.props.store.fetchNearbyRestaurants({lat, lng}, this.mapview)
   }
   onMarkerLayout = (id, selectedMarker) => {
     if (id !== selectedMarker) return
@@ -50,8 +52,7 @@ export default class App extends Component {
     }
     this.markers[id].hideCallout()
     let {selectMarker} = this.props.store
-
-    setTimeout(() => selectMarker(id), 700)
+    selectMarker(id)
   }
   renderRestaurants = () => {
     let {selectedMarker, hiddenId, topRestaurants} = this.props.store
@@ -102,13 +103,13 @@ export default class App extends Component {
     })
   }
   render () {
-    let {location, onChangeText, searchPhrase,
+    let {location, onChangeText, searchPhrase, showMyLocation, offline, 
       topLocations, fetchAreaDetails, loading} = this.props.store
     const {latitude, longitude} = location
     const True = true
     console.log('LOADING:', loading)
     return (
-      <View style={StyleSheet.absoluteFill}>
+      <View style={StyleSheet.absoluteFillObject}>
         <Image source={placeMarker} style={{opacity: 0}} />
         <Image source={selectedMarkerIcon} style={{opacity: 0}} />
         <MapView
@@ -121,9 +122,16 @@ export default class App extends Component {
             longitudeDelta: 0.0121
           }}
         >
-          {/* <Marker coordinate={location} /> */}
+          {showMyLocation ? <Marker coordinate={location} /> : <View />}
           {this.renderRestaurants()}
         </MapView>
+        {offline
+        ? <View style={styles.offlineContainer} >
+          <View style={[{height: 88}]}></View>
+          <View style={{height:36, alignItems: 'center',}}>
+            <Text style={{color: "#fff"}}> Seems like your offline.</Text>
+          </View>
+        </View>:<View />}
         <View style={[styles.searchBar]} >
           <TextInput
             autoCorrect={false}
