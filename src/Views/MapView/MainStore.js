@@ -33,7 +33,7 @@ class MainStore {
   }
   @action.bound checkNetwork = _ => {
     NetInfo.isConnected.fetch().then(isConnected => {
-      console.log("CONNECTED:",isConnected)
+      console.log('CONNECTED:', isConnected)
       this.offline = !isConnected
       NetInfo.isConnected.addEventListener(
         'connectionChange',
