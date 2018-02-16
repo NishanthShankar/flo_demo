@@ -148,7 +148,7 @@ export default class App extends Component {
           {topLocations.map(data => {
             return (
               <TouchableOpacity key={data.id}
-                onPress={_ => fetchAreaDetails(data.placeId, this.mapview)}
+                onPress={_ => fetchAreaDetails(data.placeId, data.label, this.mapview)}
                 style={[styles.searchResult]}>
                 <Text>{data.label}</Text>
               </TouchableOpacity >

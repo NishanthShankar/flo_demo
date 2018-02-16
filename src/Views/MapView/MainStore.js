@@ -79,9 +79,10 @@ class MainStore {
   }
 
   @action.bound
-  fetchAreaDetails = (placeId, map) => {
+  fetchAreaDetails = (placeId, label, map) => {
     this.offline = false
     this.loading = true
+    this.searchPhrase = label
     const base = `https://maps.googleapis.com/maps/api/place/details/json`
     const url = `${base}?placeid=${placeId}&key=${G.variables.GOOGLE_KEY}`
     fetch(url)
