@@ -28,12 +28,14 @@ class MainStore {
     let locations = this.places.slice(0, 10)
     return locations
   }
+
   handleNetwork = isConnected => {
     this.offline = !isConnected
   }
+
   @action.bound checkNetwork = _ => {
     NetInfo.isConnected.fetch().then(isConnected => {
-      console.log("CONNECTED:",isConnected)
+      console.log('CONNECTED:', isConnected)
       this.offline = !isConnected
       NetInfo.isConnected.addEventListener(
         'connectionChange',
